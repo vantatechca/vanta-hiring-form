@@ -189,6 +189,17 @@ app.get('/api/applicants/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// Delete applicant
+app.delete('/api/applicants/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM applicants WHERE id = $1 RETURNING id', [req.params.id]);
+    if (!result.rows.length) return res.status(404).json({ error: 'Not found' });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Update applicant status
 app.patch('/api/applicants/:id/status', requireAdmin, async (req, res) => {
   try {
