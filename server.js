@@ -4,9 +4,29 @@ const multer = require('multer');
 const { Pool } = require('pg');
 const cors = require('cors');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// ─── Admin credentials ──────────────────────────────────────────────────────
+const ADMIN_EMAIL = 'admin@vantahiring.ca';
+const ADMIN_PASSWORD = 'hiring_admin';
+
+// Simple token store (in production use JWT or sessions)
+const activeTokens = new Set();
+
+function generateToken() {
+  return crypto.randomBytes(32).toString('hex');
+}
+
+function requireAdmin(req, res, next) {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  if (!token || !activeTokens.has(token)) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+  next();
+}
 
 // ─── Database ─────────────────────────────────────────────────────────────────
 const pool = new Pool({
@@ -20,6 +40,7 @@ async function initDB() {
       id            SERIAL PRIMARY KEY,
       submitted_at  TIMESTAMPTZ DEFAULT NOW(),
       full_name     TEXT NOT NULL,
+      email         TEXT,
       phone         TEXT NOT NULL,
       date_of_birth DATE NOT NULL,
       marital_status TEXT NOT NULL,
@@ -37,6 +58,15 @@ async function initDB() {
       status        TEXT NOT NULL DEFAULT 'new'
     );
   `);
+
+  // Add email column if it doesn't exist (for existing databases)
+  await pool.query(`
+    DO $$ BEGIN
+      ALTER TABLE applicants ADD COLUMN IF NOT EXISTS email TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$;
+  `);
+
   console.log('✓ Database table ready');
 }
 
@@ -61,11 +91,34 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// Admin login
+app.post('/api/admin/login', (req, res) => {
+  const { email, password } = req.body;
+  if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+    const token = generateToken();
+    activeTokens.add(token);
+    res.json({ success: true, token });
+  } else {
+    res.status(401).json({ success: false, error: 'Invalid credentials' });
+  }
+});
+
+// Admin logout
+app.post('/api/admin/logout', requireAdmin, (req, res) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+  activeTokens.delete(token);
+  res.json({ success: true });
+});
+
 // Submit application
 app.post('/api/apply', upload.single('id_image'), async (req, res) => {
   try {
     const {
-      full_name, phone, date_of_birth, marital_status,
+      full_name, email, phone, date_of_birth, marital_status,
       nda_agreed, avail_weekends, avail_evenings, on_call,
       has_license, startup_ok, has_second_job, second_job_details,
       other_commitments,
@@ -82,15 +135,15 @@ app.post('/api/apply', upload.single('id_image'), async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO applicants
-        (full_name, phone, date_of_birth, marital_status,
+        (full_name, email, phone, date_of_birth, marital_status,
          id_image_data, id_image_type, nda_agreed,
          avail_weekends, avail_evenings, on_call,
          has_license, startup_ok, has_second_job, second_job_details,
          other_commitments)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
        RETURNING id, submitted_at`,
       [
-        full_name, phone, date_of_birth, marital_status,
+        full_name, email || null, phone, date_of_birth, marital_status,
         id_image_data, id_image_type, toBool(nda_agreed),
         toBool(avail_weekends), toBool(avail_evenings), toBool(on_call),
         toBool(has_license), toBool(startup_ok), toBool(has_second_job),
@@ -106,10 +159,10 @@ app.post('/api/apply', upload.single('id_image'), async (req, res) => {
 });
 
 // Admin: list all applicants (no image data, just metadata)
-app.get('/api/applicants', async (req, res) => {
+app.get('/api/applicants', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT id, submitted_at, full_name, phone, date_of_birth, marital_status,
+      SELECT id, submitted_at, full_name, email, phone, date_of_birth, marital_status,
              nda_agreed, avail_weekends, avail_evenings, on_call,
              has_license, startup_ok, has_second_job, second_job_details,
              other_commitments, status,
@@ -123,7 +176,7 @@ app.get('/api/applicants', async (req, res) => {
 });
 
 // Admin: get single applicant with image
-app.get('/api/applicants/:id', async (req, res) => {
+app.get('/api/applicants/:id', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT * FROM applicants WHERE id = $1',
@@ -137,7 +190,7 @@ app.get('/api/applicants/:id', async (req, res) => {
 });
 
 // Update applicant status
-app.patch('/api/applicants/:id/status', async (req, res) => {
+app.patch('/api/applicants/:id/status', requireAdmin, async (req, res) => {
   try {
     const { status } = req.body;
     await pool.query('UPDATE applicants SET status=$1 WHERE id=$2', [status, req.params.id]);
