@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Vanta Hiring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #0f1117;
+      --surface:    #1a1c25;
+      --border:     #2d3044;
+      --border-focus: #7c8aff;
+      --text:       #f0f0f8;
+      --text-muted: #8b8ea0;
+      --accent:     #7c8aff;
+      --accent-dim: #4f5aad;
+      --danger:     #ff6b7a;
+      --success:    #5af0a0;
+      --warning:    #ffb84d;
+      --radius:     6px;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* ── Login screen ── */
+    .login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      animation: fadeUp 0.5s ease forwards;
+    }
+    .login-card h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      margin-bottom: 8px;
+    }
+    .login-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+    .login-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .login-field label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+    .login-field input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      padding: 12px 14px;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .login-field input:focus {
+      border-color: var(--border-focus);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s;
+    }
+    .login-btn:hover { background: #95a1ff; }
+    .login-btn:disabled { background: var(--accent-dim); cursor: not-allowed; }
+    .login-error {
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* ── Dashboard ── */
+    .dashboard { display: none; }
+    .dashboard.visible { display: block; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 400;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .topbar-user {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+    .content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 700px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 6px;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-header h2 {
+      font-size: 15px;
+      font-weight: 400;
+    }
+    .refresh-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      padding: 6px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    thead th {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody td {
+      font-size: 13px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(124, 138, 255, 0.03); }
+    tbody tr { cursor: pointer; transition: background 0.15s; }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+    .status-new { background: rgba(124, 138, 255, 0.15); color: var(--accent); }
+    .status-reviewed { background: rgba(255, 184, 77, 0.15); color: var(--warning); }
+    .status-hired { background: rgba(90, 240, 160, 0.15); color: var(--success); }
+    .status-rejected { background: rgba(255, 107, 122, 0.15); color: var(--danger); }
+
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ── Detail modal ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-overlay.visible {
+      display: flex;
+    }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: fadeUp 0.3s ease forwards;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .modal-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 400;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body { padding: 24px; }
+
+    .detail-section {
+      margin-bottom: 24px;
+    }
+    .detail-section-title {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .detail-item.full { grid-column: 1 / -1; }
+    .detail-label {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .detail-value {
+      font-size: 14px;
+      color: var(--text);
+    }
+    .detail-bool-yes { color: var(--success); }
+    .detail-bool-no { color: var(--danger); }
+
+    .id-image-preview {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      margin-top: 8px;
+    }
+
+    .status-select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 8px 12px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .status-select:focus { border-color: var(--accent); }
+
+    @media (max-width: 700px) {
+      .detail-grid { grid-template-columns: 1fr; }
+      table { font-size: 12px; }
+      thead th, tbody td { padding: 10px 12px; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Login Screen ── -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <h1>Admin Portal</h1>
+    <p>Sign in to view candidate applications.</p>
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@vantahiring.ca" required />
+      </div>
+      <div class="login-field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter password" required />
+      </div>
+      <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+      <div class="login-error" id="loginError">Invalid email or password.</div>
+    </form>
+  </div>
+</div>
+
+<!-- ── Dashboard ── -->
+<div class="dashboard" id="dashboard">
+  <div class="topbar">
+    <div class="topbar-title">Vanta Hiring — Admin</div>
+    <div class="topbar-right">
+      <span class="topbar-user">admin@vantahiring.ca</span>
+      <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stats-row" id="statsRow">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="statTotal">0</div></div>
+      <div class="stat-card"><div class="stat-label">New</div><div class="stat-value" id="statNew">0</div></div>
+      <div class="stat-card"><div class="stat-label">Reviewed</div><div class="stat-value" id="statReviewed">0</div></div>
+      <div class="stat-card"><div class="stat-label">Hired</div><div class="stat-value" id="statHired">0</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-header">
+        <h2>Applicants</h2>
+        <button class="refresh-btn" id="refreshBtn">Refresh</button>
+      </div>
+      <div id="tableContent">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="applicantsList"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Detail modal ── -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">Applicant Details</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+  let authToken = sessionStorage.getItem('adminToken');
+
+  // ── Check existing session ──
+  if (authToken) {
+    showDashboard();
+  }
+
+  // ── Login ──
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const btn = document.getElementById('loginBtn');
+    const err = document.getElementById('loginError');
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+    err.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        authToken = data.token;
+        sessionStorage.setItem('adminToken', authToken);
+        showDashboard();
+      } else {
+        err.style.display = 'block';
+      }
+    } catch {
+      err.textContent = 'Connection error. Please try again.';
+      err.style.display = 'block';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Sign In';
+  });
+
+  // ── Logout ──
+  document.getElementById('logoutBtn').addEventListener('click', async () => {
+    try {
+      await fetch('/api/admin/logout', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + authToken },
+      });
+    } catch {}
+    authToken = null;
+    sessionStorage.removeItem('adminToken');
+    document.getElementById('dashboard').classList.remove('visible');
+    document.getElementById('loginScreen').style.display = 'flex';
+  });
+
+  // ── Show dashboard ──
+  function showDashboard() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').classList.add('visible');
+    loadApplicants();
+  }
+
+  // ── API helper ──
+  async function apiFetch(url, opts = {}) {
+    opts.headers = { ...opts.headers, 'Authorization': 'Bearer ' + authToken };
+    const res = await fetch(url, opts);
+    if (res.status === 401) {
+      authToken = null;
+      sessionStorage.removeItem('adminToken');
+      location.reload();
+      return null;
+    }
+    return res.json();
+  }
+
+  // ── Load applicants ──
+  let applicantsData = [];
+
+  async function loadApplicants() {
+    const data = await apiFetch('/api/applicants');
+    if (!data) return;
+    applicantsData = data;
+    renderStats(data);
+    renderTable(data);
+  }
+
+  function renderStats(data) {
+    document.getElementById('statTotal').textContent = data.length;
+    document.getElementById('statNew').textContent = data.filter(a => a.status === 'new').length;
+    document.getElementById('statReviewed').textContent = data.filter(a => a.status === 'reviewed').length;
+    document.getElementById('statHired').textContent = data.filter(a => a.status === 'hired').length;
+  }
+
+  function renderTable(data) {
+    const tbody = document.getElementById('applicantsList');
+    if (!data.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No applications yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.map(a => `
+      <tr data-id="${a.id}">
+        <td><strong>${esc(a.full_name)}</strong></td>
+        <td>${esc(a.email || '—')}</td>
+        <td>${esc(a.phone)}</td>
+        <td>${new Date(a.submitted_at).toLocaleDateString()}</td>
+        <td><span class="status-badge status-${a.status}">${a.status}</span></td>
+      </tr>
+    `).join('');
+
+    tbody.querySelectorAll('tr').forEach(row => {
+      row.addEventListener('click', () => openDetail(row.dataset.id));
+    });
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // ── Refresh ──
+  document.getElementById('refreshBtn').addEventListener('click', loadApplicants);
+
+  // ── Detail modal ──
+  const overlay = document.getElementById('modalOverlay');
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
+
+  function closeModal() { overlay.classList.remove('visible'); }
+
+  async function openDetail(id) {
+    const data = await apiFetch('/api/applicants/' + id);
+    if (!data) return;
+
+    document.getElementById('modalTitle').textContent = data.full_name;
+
+    const boolDisplay = (v) => v
+      ? '<span class="detail-bool-yes">Yes</span>'
+      : '<span class="detail-bool-no">No</span>';
+
+    const formatDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+
+    let imageHtml = '<span style="color:var(--text-muted)">No image uploaded</span>';
+    if (data.id_image_data && data.id_image_type) {
+      imageHtml = `<img class="id-image-preview" src="data:${esc(data.id_image_type)};base64,${data.id_image_data}" alt="ID Photo" />`;
+    }
+
+    document.getElementById('modalBody').innerHTML = `
+      <div class="detail-section">
+        <div class="detail-section-title">Personal Information</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Full Name</span><span class="detail-value">${esc(data.full_name)}</span></div>
+          <div class="detail-item"><span class="detail-label">Email</span><span class="detail-value">${esc(data.email || '—')}</span></div>
+          <div class="detail-item"><span class="detail-label">Phone</span><span class="detail-value">${esc(data.phone)}</span></div>
+          <div class="detail-item"><span class="detail-label">Date of Birth</span><span class="detail-value">${formatDate(data.date_of_birth)}</span></div>
+          <div class="detail-item"><span class="detail-label">Marital Status</span><span class="detail-value" style="text-transform:capitalize">${esc(data.marital_status)}</span></div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">ID Verification</div>
+        ${imageHtml}
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Availability & Qualifications</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Available Weekends</span><span class="detail-value">${boolDisplay(data.avail_weekends)}</span></div>
+          <div class="detail-item"><span class="detail-label">Available Evenings</span><span class="detail-value">${boolDisplay(data.avail_evenings)}</span></div>
+          <div class="detail-item"><span class="detail-label">On-Call Available</span><span class="detail-value">${boolDisplay(data.on_call)}</span></div>
+          <div class="detail-item"><span class="detail-label">Driver's License</span><span class="detail-value">${boolDisplay(data.has_license)}</span></div>
+          <div class="detail-item"><span class="detail-label">Startup Environment OK</span><span class="detail-value">${boolDisplay(data.startup_ok)}</span></div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">Commitments</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">Has Second Job</span><span class="detail-value">${boolDisplay(data.has_second_job)}</span></div>
+          ${data.second_job_details ? `<div class="detail-item full"><span class="detail-label">Second Job Details</span><span class="detail-value">${esc(data.second_job_details)}</span></div>` : ''}
+          ${data.other_commitments ? `<div class="detail-item full"><span class="detail-label">Other Commitments</span><span class="detail-value">${esc(data.other_commitments)}</span></div>` : ''}
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">NDA & Status</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span class="detail-label">NDA Agreed</span><span class="detail-value">${boolDisplay(data.nda_agreed)}</span></div>
+          <div class="detail-item"><span class="detail-label">Submitted</span><span class="detail-value">${new Date(data.submitted_at).toLocaleString()}</span></div>
+          <div class="detail-item">
+            <span class="detail-label">Status</span>
+            <select class="status-select" id="statusSelect" data-id="${data.id}">
+              <option value="new" ${data.status === 'new' ? 'selected' : ''}>New</option>
+              <option value="reviewed" ${data.status === 'reviewed' ? 'selected' : ''}>Reviewed</option>
+              <option value="hired" ${data.status === 'hired' ? 'selected' : ''}>Hired</option>
+              <option value="rejected" ${data.status === 'rejected' ? 'selected' : ''}>Rejected</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('statusSelect').addEventListener('change', async (e) => {
+      await apiFetch('/api/applicants/' + e.target.dataset.id + '/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: e.target.value }),
+      });
+      loadApplicants();
+    });
+
+    overlay.classList.add('visible');
+  }
+</script>
+</body>
+</html>

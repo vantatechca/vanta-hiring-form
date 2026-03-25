@@ -11,16 +11,16 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:         #111210;
-      --surface:    #1a1b19;
-      --border:     #2e2f2c;
-      --border-focus: #8a7a60;
-      --text:       #e8e4dc;
-      --text-muted: #7a7870;
-      --accent:     #c9a96e;
-      --accent-dim: #7a6440;
-      --danger:     #c96e6e;
-      --success:    #6ec98a;
+      --bg:         #0f1117;
+      --surface:    #1a1c25;
+      --border:     #2d3044;
+      --border-focus: #7c8aff;
+      --text:       #f0f0f8;
+      --text-muted: #8b8ea0;
+      --accent:     #7c8aff;
+      --accent-dim: #4f5aad;
+      --danger:     #ff6b7a;
+      --success:    #5af0a0;
       --radius:     6px;
     }
 
@@ -162,9 +162,24 @@
       filter: invert(0.5);
       cursor: pointer;
     }
+    input[type="email"] {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      padding: 12px 14px;
+      width: 100%;
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
     input:focus, select:focus, textarea:focus {
       border-color: var(--border-focus);
-      background: #1e1f1c;
+      background: #1e2030;
     }
     textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
 
@@ -174,7 +189,7 @@
       background-position: right 14px center;
       padding-right: 36px;
     }
-    select option { background: #1a1b19; }
+    select option { background: #1a1c25; }
 
     /* ── File upload ── */
     .file-upload {
@@ -188,7 +203,7 @@
     }
     .file-upload:hover, .file-upload.dragover {
       border-color: var(--border-focus);
-      background: rgba(201, 169, 110, 0.04);
+      background: rgba(124, 138, 255, 0.04);
     }
     .file-upload input[type="file"] {
       position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
@@ -251,7 +266,7 @@
     .toggle-card:hover { border-color: #404038; }
     .toggle-card.active {
       border-color: var(--border-focus);
-      background: rgba(201, 169, 110, 0.06);
+      background: rgba(124, 138, 255, 0.06);
     }
     .toggle-card input[type="checkbox"] { display: none; }
     .toggle-dot {
@@ -270,8 +285,8 @@
     .toggle-dot::after {
       content: '';
       width: 8px; height: 5px;
-      border-left: 1.5px solid #111;
-      border-bottom: 1.5px solid #111;
+      border-left: 1.5px solid #fff;
+      border-bottom: 1.5px solid #fff;
       transform: rotate(-45deg) translateY(-1px);
       opacity: 0;
       transition: opacity 0.15s;
@@ -311,7 +326,7 @@
     .yn-option:hover { border-color: #404038; color: var(--text); }
     .yn-option.active {
       border-color: var(--border-focus);
-      background: rgba(201, 169, 110, 0.06);
+      background: rgba(124, 138, 255, 0.06);
       color: var(--accent);
     }
     .yn-option input { display: none; }
@@ -352,8 +367,8 @@
     .nda-box::after {
       content: '';
       width: 9px; height: 6px;
-      border-left: 1.5px solid #111;
-      border-bottom: 1.5px solid #111;
+      border-left: 1.5px solid #fff;
+      border-bottom: 1.5px solid #fff;
       transform: rotate(-45deg) translateY(-1px);
       opacity: 0;
       transition: opacity 0.15s;
@@ -390,7 +405,7 @@
       background: var(--accent);
       border: none;
       border-radius: var(--radius);
-      color: #111210;
+      color: #fff;
       font-family: 'DM Sans', sans-serif;
       font-size: 13px;
       font-weight: 500;
@@ -399,7 +414,7 @@
       cursor: pointer;
       transition: background 0.2s, transform 0.1s;
     }
-    .submit-btn:hover { background: #dbb87a; }
+    .submit-btn:hover { background: #95a1ff; }
     .submit-btn:active { transform: scale(0.99); }
     .submit-btn:disabled { background: var(--accent-dim); cursor: not-allowed; }
 
@@ -419,8 +434,8 @@
       white-space: nowrap;
       z-index: 100;
     }
-    .toast.success { background: #1a2e1f; border: 1px solid #6ec98a44; color: var(--success); }
-    .toast.error   { background: #2e1a1a; border: 1px solid #c96e6e44; color: var(--danger); }
+    .toast.success { background: #142a1f; border: 1px solid #5af0a044; color: var(--success); }
+    .toast.error   { background: #2a1420; border: 1px solid #ff6b7a44; color: var(--danger); }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
     /* ── Success screen ── */
@@ -486,17 +501,24 @@
           <input type="text" id="full_name" name="full_name" placeholder="As it appears on your ID" required />
         </div>
         <div class="field">
-          <label for="phone">Phone Number <span class="req">*</span></label>
-          <input type="tel" id="phone" name="phone" placeholder="+1 (___) ___-____" required />
+          <label for="email">Email Address <span class="req">*</span></label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
         </div>
       </div>
 
       <div class="field-row">
         <div class="field">
+          <label for="phone">Phone Number <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="+1 (___) ___-____" required />
+        </div>
+        <div class="field">
           <label for="date_of_birth">Date of Birth <span class="req">*</span></label>
           <input type="date" id="date_of_birth" name="date_of_birth" required />
         </div>
-        <div class="field">
+      </div>
+
+      <div class="field-row">
+        <div class="field" style="grid-column: 1;">
           <label for="marital_status">Marital Status <span class="req">*</span></label>
           <select id="marital_status" name="marital_status" required>
             <option value="" disabled selected>Select one</option>
