@@ -691,8 +691,9 @@
 <script>
   // ── Toggle cards ──────────────────────────────────────────────────────────
   document.querySelectorAll('.toggle-card').forEach(card => {
-    card.addEventListener('click', () => {
-      card.classList.toggle('active');
+    const cb = card.querySelector('input[type="checkbox"]');
+    cb.addEventListener('change', () => {
+      card.classList.toggle('active', cb.checked);
     });
   });
 
@@ -700,8 +701,10 @@
   function bindYN(yesId, noId) {
     const yes = document.getElementById(yesId);
     const no  = document.getElementById(noId);
-    yes.addEventListener('click', () => { yes.classList.add('active'); no.classList.remove('active'); });
-    no.addEventListener('click',  () => { no.classList.add('active'); yes.classList.remove('active'); });
+    const yesInput = yes.querySelector('input');
+    const noInput = no.querySelector('input');
+    yesInput.addEventListener('change', () => { yes.classList.add('active'); no.classList.remove('active'); });
+    noInput.addEventListener('change', () => { no.classList.add('active'); yes.classList.remove('active'); });
   }
   bindYN('oncall-yes', 'oncall-no');
   bindYN('license-yes', 'license-no');
@@ -709,16 +712,17 @@
   bindYN('secondjob-yes', 'secondjob-no');
 
   // Second job details reveal
-  document.getElementById('secondjob-yes').addEventListener('click', () => {
+  document.getElementById('secondjob-yes').querySelector('input').addEventListener('change', () => {
     document.getElementById('second-job-details').classList.add('visible');
   });
-  document.getElementById('secondjob-no').addEventListener('click', () => {
+  document.getElementById('secondjob-no').querySelector('input').addEventListener('change', () => {
     document.getElementById('second-job-details').classList.remove('visible');
   });
 
   // ── NDA checkbox ──────────────────────────────────────────────────────────
   const ndaLabel = document.getElementById('ndaLabel');
-  ndaLabel.addEventListener('click', () => ndaLabel.classList.toggle('checked'));
+  const ndaInput = document.getElementById('nda_agreed');
+  ndaInput.addEventListener('change', () => ndaLabel.classList.toggle('checked', ndaInput.checked));
 
   // ── File upload ───────────────────────────────────────────────────────────
   const fileZone    = document.getElementById('fileZone');
