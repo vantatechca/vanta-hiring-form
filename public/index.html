@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Application Form</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #111210;
+      --surface:    #1a1b19;
+      --border:     #2e2f2c;
+      --border-focus: #8a7a60;
+      --text:       #e8e4dc;
+      --text-muted: #7a7870;
+      --accent:     #c9a96e;
+      --accent-dim: #7a6440;
+      --danger:     #c96e6e;
+      --success:    #6ec98a;
+      --radius:     6px;
+    }
+
+    html { font-size: 16px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      min-height: 100vh;
+      padding: 60px 20px 100px;
+      line-height: 1.6;
+    }
+
+    /* ── Layout ── */
+    .wrapper {
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      margin-bottom: 56px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards;
+    }
+    .header-eyebrow {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .header h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .header p {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 460px;
+      line-height: 1.7;
+    }
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--accent-dim);
+      margin: 28px 0;
+    }
+
+    /* ── Form sections ── */
+    .section {
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards;
+    }
+    .section:nth-child(2) { animation-delay: 0.08s; }
+    .section:nth-child(3) { animation-delay: 0.14s; }
+    .section:nth-child(4) { animation-delay: 0.20s; }
+    .section:nth-child(5) { animation-delay: 0.26s; }
+    .section:nth-child(6) { animation-delay: 0.32s; }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Field groups ── */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 500px) { .field-row { grid-template-columns: 1fr; } }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .field:last-child { margin-bottom: 0; }
+
+    label {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+    label .req {
+      color: var(--accent);
+      margin-left: 3px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    input[type="date"],
+    select,
+    textarea {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      padding: 12px 14px;
+      width: 100%;
+      transition: border-color 0.2s, background 0.2s;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.5);
+      cursor: pointer;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--border-focus);
+      background: #1e1f1c;
+    }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a7870' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      padding-right: 36px;
+    }
+    select option { background: #1a1b19; }
+
+    /* ── File upload ── */
+    .file-upload {
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 28px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .file-upload:hover, .file-upload.dragover {
+      border-color: var(--border-focus);
+      background: rgba(201, 169, 110, 0.04);
+    }
+    .file-upload input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .file-upload-icon { font-size: 22px; margin-bottom: 8px; }
+    .file-upload p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .file-upload strong { color: var(--accent); font-weight: 400; }
+    .file-preview {
+      display: none;
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 13px;
+      color: var(--text-muted);
+      align-items: center;
+      gap: 10px;
+    }
+    .file-preview.visible { display: flex; }
+    .file-preview img {
+      width: 36px;
+      height: 36px;
+      object-fit: cover;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .file-preview-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-preview-remove {
+      cursor: pointer;
+      color: var(--danger);
+      font-size: 16px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    /* ── Toggle cards ── */
+    .toggle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 400px) { .toggle-grid { grid-template-columns: 1fr; } }
+
+    .toggle-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      user-select: none;
+    }
+    .toggle-card:hover { border-color: #404038; }
+    .toggle-card.active {
+      border-color: var(--border-focus);
+      background: rgba(201, 169, 110, 0.06);
+    }
+    .toggle-card input[type="checkbox"] { display: none; }
+    .toggle-dot {
+      width: 16px; height: 16px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: background 0.2s, border-color 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .toggle-card.active .toggle-dot {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .toggle-dot::after {
+      content: '';
+      width: 8px; height: 5px;
+      border-left: 1.5px solid #111;
+      border-bottom: 1.5px solid #111;
+      transform: rotate(-45deg) translateY(-1px);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .toggle-card.active .toggle-dot::after { opacity: 1; }
+    .toggle-text { flex: 1; }
+    .toggle-title {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      line-height: 1.4;
+    }
+    .toggle-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    /* ── Radio pair (Yes / No) ── */
+    .yn-pair {
+      display: flex;
+      gap: 10px;
+    }
+    .yn-option {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .yn-option:hover { border-color: #404038; color: var(--text); }
+    .yn-option.active {
+      border-color: var(--border-focus);
+      background: rgba(201, 169, 110, 0.06);
+      color: var(--accent);
+    }
+    .yn-option input { display: none; }
+
+    /* ── NDA block ── */
+    .nda-block {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      background: var(--surface);
+    }
+    .nda-text {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .nda-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .nda-check input { display: none; }
+    .nda-box {
+      width: 18px; height: 18px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nda-check.checked .nda-box {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .nda-box::after {
+      content: '';
+      width: 9px; height: 6px;
+      border-left: 1.5px solid #111;
+      border-bottom: 1.5px solid #111;
+      transform: rotate(-45deg) translateY(-1px);
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .nda-check.checked .nda-box::after { opacity: 1; }
+    .nda-check-label {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    /* ── Second job details ── */
+    #second-job-details {
+      margin-top: 12px;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.3s ease;
+    }
+    #second-job-details.visible {
+      max-height: 200px;
+      opacity: 1;
+    }
+
+    /* ── Submit ── */
+    .submit-area {
+      margin-top: 48px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.38s forwards;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 16px 24px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius);
+      color: #111210;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .submit-btn:hover { background: #dbb87a; }
+    .submit-btn:active { transform: scale(0.99); }
+    .submit-btn:disabled { background: var(--accent-dim); cursor: not-allowed; }
+
+    /* ── Toast / feedback ── */
+    .toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      padding: 14px 24px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 400;
+      opacity: 0;
+      transition: all 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 100;
+    }
+    .toast.success { background: #1a2e1f; border: 1px solid #6ec98a44; color: var(--success); }
+    .toast.error   { background: #2e1a1a; border: 1px solid #c96e6e44; color: var(--danger); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Success screen ── */
+    .success-screen {
+      display: none;
+      text-align: center;
+      padding: 80px 0;
+    }
+    .success-screen.visible { display: block; }
+    .success-icon {
+      width: 64px; height: 64px;
+      border: 1px solid var(--border-focus);
+      border-radius: 50%;
+      margin: 0 auto 28px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .success-screen h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 300;
+      margin-bottom: 12px;
+    }
+    .success-screen p { font-size: 14px; color: var(--text-muted); }
+
+    /* ── Validation ── */
+    .field-error {
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: -4px;
+    }
+    input.invalid, select.invalid, textarea.invalid {
+      border-color: var(--danger) !important;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <p class="header-eyebrow">Candidate Application</p>
+    <h1>Tell us<br/><em>about yourself.</em></h1>
+    <div class="divider"></div>
+    <p>Please fill this out accurately — it goes directly to our team and helps us move things forward quickly. All information is kept strictly confidential.</p>
+  </header>
+
+  <!-- ── Form ── -->
+  <form id="applyForm" novalidate>
+
+    <!-- 01 Personal Info -->
+    <div class="section">
+      <div class="section-label">01 &nbsp; Personal Information</div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="full_name">Full Legal Name <span class="req">*</span></label>
+          <input type="text" id="full_name" name="full_name" placeholder="As it appears on your ID" required />
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number <span class="req">*</span></label>
+          <input type="tel" id="phone" name="phone" placeholder="+1 (___) ___-____" required />
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="date_of_birth">Date of Birth <span class="req">*</span></label>
+          <input type="date" id="date_of_birth" name="date_of_birth" required />
+        </div>
+        <div class="field">
+          <label for="marital_status">Marital Status <span class="req">*</span></label>
+          <select id="marital_status" name="marital_status" required>
+            <option value="" disabled selected>Select one</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+            <option value="separated">Separated</option>
+            <option value="divorced">Divorced</option>
+            <option value="widowed">Widowed</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 ID Verification -->
+    <div class="section">
+      <div class="section-label">02 &nbsp; ID Verification</div>
+
+      <div class="field">
+        <label>Government-Issued ID Photo <span class="req">*</span></label>
+        <div class="file-upload" id="fileZone">
+          <input type="file" id="id_image" name="id_image" accept="image/*" />
+          <div class="file-upload-icon">⟁</div>
+          <p><strong>Click to upload</strong> or drag and drop<br/>Passport · Driver's licence · National ID · Max 8 MB</p>
+        </div>
+        <div class="file-preview" id="filePreview">
+          <img id="previewImg" src="" alt="" />
+          <span class="file-preview-name" id="fileName"></span>
+          <span class="file-preview-remove" id="removeFile" title="Remove">✕</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 Availability -->
+    <div class="section">
+      <div class="section-label">03 &nbsp; Availability</div>
+
+      <div class="field">
+        <label>When are you available? <span class="req">*</span></label>
+        <div class="toggle-grid">
+          <label class="toggle-card" id="card-weekends">
+            <input type="checkbox" name="avail_weekends" value="true" />
+            <div class="toggle-dot"></div>
+            <div class="toggle-text">
+              <div class="toggle-title">Weekends</div>
+              <div class="toggle-sub">Saturday and Sunday</div>
+            </div>
+          </label>
+          <label class="toggle-card" id="card-evenings">
+            <input type="checkbox" name="avail_evenings" value="true" />
+            <div class="toggle-dot"></div>
+            <div class="toggle-text">
+              <div class="toggle-title">Evenings</div>
+              <div class="toggle-sub">6 PM onwards on weekdays</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 20px;">
+        <label>Available on-call for emergencies? <span class="req">*</span></label>
+        <div class="yn-pair">
+          <label class="yn-option" id="oncall-yes">
+            <input type="radio" name="on_call" value="true" required />
+            Yes, I'm available
+          </label>
+          <label class="yn-option" id="oncall-no">
+            <input type="radio" name="on_call" value="false" />
+            No, I'm not
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 Qualifications -->
+    <div class="section">
+      <div class="section-label">04 &nbsp; Qualifications & Fit</div>
+
+      <div class="field">
+        <label>Do you have a valid driver's license? <span class="req">*</span></label>
+        <div class="yn-pair">
+          <label class="yn-option" id="license-yes">
+            <input type="radio" name="has_license" value="true" required />
+            Yes
+          </label>
+          <label class="yn-option" id="license-no">
+            <input type="radio" name="has_license" value="false" />
+            No
+          </label>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 20px;">
+        <label>Comfortable in a fast-moving startup environment? <span class="req">*</span></label>
+        <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.6;">Priorities can shift dramatically in a single day. Tasks, roles, and focus areas may change at a moment's notice.</p>
+        <div class="yn-pair">
+          <label class="yn-option" id="startup-yes">
+            <input type="radio" name="startup_ok" value="true" required />
+            Yes, I thrive in that
+          </label>
+          <label class="yn-option" id="startup-no">
+            <input type="radio" name="startup_ok" value="false" />
+            No, I prefer stability
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 Commitments -->
+    <div class="section">
+      <div class="section-label">05 &nbsp; Other Commitments</div>
+
+      <div class="field">
+        <label>Do you currently hold a second job? <span class="req">*</span></label>
+        <div class="yn-pair">
+          <label class="yn-option" id="secondjob-yes">
+            <input type="radio" name="has_second_job" value="true" required />
+            Yes
+          </label>
+          <label class="yn-option" id="secondjob-no">
+            <input type="radio" name="has_second_job" value="false" />
+            No
+          </label>
+        </div>
+        <div id="second-job-details">
+          <textarea name="second_job_details" placeholder="Briefly describe — role, hours, and any potential schedule conflicts…" style="margin-top:0;"></textarea>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:20px;">
+        <label>Any other major or minor commitments we should know about?</label>
+        <textarea name="other_commitments" placeholder="Family obligations, school, volunteer work, health considerations, etc."></textarea>
+      </div>
+    </div>
+
+    <!-- 06 NDA -->
+    <div class="section">
+      <div class="section-label">06 &nbsp; Confidentiality</div>
+
+      <div class="field">
+        <div class="nda-block">
+          <p class="nda-text">If offered employment, you may be required to sign a Non-Disclosure Agreement (NDA) covering proprietary business operations, client information, internal processes, and any confidential materials you encounter in the role. This is standard for our team.</p>
+          <label class="nda-check" id="ndaLabel">
+            <input type="checkbox" name="nda_agreed" id="nda_agreed" required />
+            <div class="nda-box"></div>
+            <span class="nda-check-label">I understand and agree to sign an NDA if offered employment.</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-area">
+      <button type="submit" class="submit-btn" id="submitBtn">Submit Application</button>
+    </div>
+
+  </form>
+
+  <!-- Success screen -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <h2>Application received.</h2>
+    <p>We'll be in touch shortly. Thank you for your time.</p>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Toggle cards ──────────────────────────────────────────────────────────
+  document.querySelectorAll('.toggle-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('active');
+    });
+  });
+
+  // ── Yes/No pairs ──────────────────────────────────────────────────────────
+  function bindYN(yesId, noId) {
+    const yes = document.getElementById(yesId);
+    const no  = document.getElementById(noId);
+    yes.addEventListener('click', () => { yes.classList.add('active'); no.classList.remove('active'); });
+    no.addEventListener('click',  () => { no.classList.add('active'); yes.classList.remove('active'); });
+  }
+  bindYN('oncall-yes', 'oncall-no');
+  bindYN('license-yes', 'license-no');
+  bindYN('startup-yes', 'startup-no');
+  bindYN('secondjob-yes', 'secondjob-no');
+
+  // Second job details reveal
+  document.getElementById('secondjob-yes').addEventListener('click', () => {
+    document.getElementById('second-job-details').classList.add('visible');
+  });
+  document.getElementById('secondjob-no').addEventListener('click', () => {
+    document.getElementById('second-job-details').classList.remove('visible');
+  });
+
+  // ── NDA checkbox ──────────────────────────────────────────────────────────
+  const ndaLabel = document.getElementById('ndaLabel');
+  ndaLabel.addEventListener('click', () => ndaLabel.classList.toggle('checked'));
+
+  // ── File upload ───────────────────────────────────────────────────────────
+  const fileZone    = document.getElementById('fileZone');
+  const fileInput   = document.getElementById('id_image');
+  const filePreview = document.getElementById('filePreview');
+  const previewImg  = document.getElementById('previewImg');
+  const fileName    = document.getElementById('fileName');
+  const removeFile  = document.getElementById('removeFile');
+
+  function handleFile(file) {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => { previewImg.src = e.target.result; };
+    reader.readAsDataURL(file);
+    fileName.textContent = file.name;
+    filePreview.classList.add('visible');
+    fileZone.style.display = 'none';
+  }
+
+  fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+  fileZone.addEventListener('dragover', e => { e.preventDefault(); fileZone.classList.add('dragover'); });
+  fileZone.addEventListener('dragleave', () => fileZone.classList.remove('dragover'));
+  fileZone.addEventListener('drop', e => {
+    e.preventDefault();
+    fileZone.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if (f) { handleFile(f); }
+  });
+
+  removeFile.addEventListener('click', e => {
+    e.stopPropagation();
+    fileInput.value = '';
+    filePreview.classList.remove('visible');
+    fileZone.style.display = '';
+    previewImg.src = '';
+  });
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
+  function showToast(msg, type = 'success') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type} show`;
+    setTimeout(() => t.classList.remove('show'), 4000);
+  }
+
+  // ── Submit ────────────────────────────────────────────────────────────────
+  document.getElementById('applyForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+
+    // Basic validation
+    let valid = true;
+    form.querySelectorAll('[required]').forEach(el => {
+      el.classList.remove('invalid');
+      if (el.type === 'radio') return; // handled separately
+      if (!el.value.trim()) {
+        el.classList.add('invalid');
+        valid = false;
+      }
+    });
+
+    // Radio groups
+    ['on_call', 'has_license', 'startup_ok', 'has_second_job'].forEach(name => {
+      if (!form.querySelector(`input[name="${name}"]:checked`)) valid = false;
+    });
+
+    // NDA
+    if (!document.getElementById('ndaLabel').classList.contains('checked')) {
+      showToast('Please agree to the NDA to continue.', 'error');
+      valid = false;
+    }
+
+    // ID image
+    if (!fileInput.files[0]) {
+      showToast('Please upload your ID photo.', 'error');
+      valid = false;
+    }
+
+    if (!valid) {
+      showToast('Please complete all required fields.', 'error');
+      return;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    const data = new FormData(form);
+    // Sync toggle cards
+    data.set('avail_weekends',  document.getElementById('card-weekends').classList.contains('active') ? 'true' : 'false');
+    data.set('avail_evenings',  document.getElementById('card-evenings').classList.contains('active') ? 'true' : 'false');
+    data.set('nda_agreed',      document.getElementById('ndaLabel').classList.contains('checked') ? 'true' : 'false');
+
+    try {
+      const res = await fetch('/api/apply', { method: 'POST', body: data });
+      const json = await res.json();
+      if (json.success) {
+        form.style.display = 'none';
+        document.querySelector('.header').style.display = 'none';
+        document.getElementById('successScreen').classList.add('visible');
+      } else {
+        throw new Error(json.error || 'Submission failed');
+      }
+    } catch (err) {
+      showToast(err.message || 'Something went wrong.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Submit Application';
+    }
+  });
+</script>
+</body>
+</html>
